@@ -2037,7 +2037,7 @@ local FEScripts = function()
             Track:AdjustSpeed(1)
             for i,v in next, LocalPlayer.Character:GetDescendants() do
                 if v.ClassName == "Part" then
-                    v.CustomPhysicalProperties = PhysicalProperties.new(0,0,0)
+                    v.CustomPhysicalProperties = PhysicalProperties.new(Settings.Saved.Scripts.Car.Stick,0,0)
                 end
             end
             local Character = LocalPlayer.Character
@@ -2076,13 +2076,11 @@ local FEScripts = function()
             local Character = LocalPlayer.Character
             Character:FindFirstChild("Humanoid").HipHeight = state
             wait(1.5)
-            for i=1, 1 do
-                repeat Character:FindFirstChild("Humanoid").HipHeight = state - n
-                    wait(.4)
-                    Character:FindFirstChild("Humanoid").HipHeight = state + n
-                    wait(.4)
-                until Character:FindFirstChild("Humanoid").Health == 0
-            end
+            repeat Character:FindFirstChild("Humanoid").HipHeight = state - n
+                wait(.4)
+                Character:FindFirstChild("Humanoid").HipHeight = state + n
+                wait(.4)
+            until Character:FindFirstChild("Humanoid").Health == 0
         end
     })
 end
