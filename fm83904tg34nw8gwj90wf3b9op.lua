@@ -1990,7 +1990,7 @@ if not Settings.Saved.TOS then
     end)
     Agree.MouseButton1Click:Connect(function()
         Settings.Saved.TOS = true
-        
+        Settings:Save()
         TweenService:Create(Agree, TweenInfo.new(.5), {
             BackgroundTransparency = 1,
             TextTransparency = 1
@@ -2024,9 +2024,62 @@ wait(1)
 local Tab_Universal = UI:CreateWindow("Universal")
 local FEScripts = function()
     local Folder_FE = Tab_Universal:AddFolder('FE Scripts')
-    local Folder_FECar = Folder_FE:AddFolder('R6 Car')
-    Folder_FECar:AddButton({
-        text = "Execute",
+    local Folder_R15 = Folder_FE:AddFolder('R15 Scripts')
+    local Folder_Scaling = Folder_R15:AddFolder("Body Scaling")
+    Folder_Scaling:AddButton({
+        text = "Huge Head",
+        callback = function()
+            local Character = LocalPlayer.Character
+            local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+            local rm = function()
+            	for i,v in pairs(Character:GetDescendants()) do
+            		if v:IsA("BasePart") then
+            			if v.Name == "Handle" or v.Name == "Head" then
+            				if Character.Head:FindFirstChild("OriginalSize") then
+            					Character.Head.OriginalSize:Destroy()
+            				end
+            			else
+            				for i,cav in pairs(v:GetDescendants()) do
+            					if cav:IsA("Attachment") then
+            						if cav:FindFirstChild("OriginalPosition") then
+            							cav.OriginalPosition:Destroy()  
+            						end
+            					end
+            				end
+            				v:FindFirstChild("OriginalSize"):Destroy()
+            				if v:FindFirstChild("AvatarPartScaleType") then
+            					v:FindFirstChild("AvatarPartScaleType"):Destroy()
+            				end
+            			end
+            		end
+            	end
+            end
+            rm()
+            wait(0.5)
+            Humanoid:FindFirstChild("BodyProportionScale"):Destroy()
+            wait(1)
+            rm()
+            wait(0.5)
+            Humanoid:FindFirstChild("BodyHeightScale"):Destroy()
+            wait(1)
+            rm()
+            wait(0.5)
+            Humanoid:FindFirstChild("BodyWidthScale"):Destroy()
+            wait(1)
+            rm()
+            wait(0.5)
+            Humanoid:FindFirstChild("BodyDepthScale"):Destroy()
+            wait(1)
+            rm()
+            wait(0.5)
+            Humanoid:FindFirstChild("HeadScale"):Destroy()
+            wait(1)
+        end
+    })
+    local Folder_R6 = Folder_FE:AddFolder('R6 Scripts')
+    local Folder_Car = Folder_R6:AddFolder('Car Accessory')
+    Folder_Car:AddButton({
+        text = "Activate",
         callback = function()
             LocalPlayer.Character.Humanoid.WalkSpeed = Settings.Saved.Scripts.Car.Speed
             LocalPlayer.Character.Humanoid.JumpPower = 0.0001
@@ -2052,7 +2105,7 @@ local FEScripts = function()
             end
         end
     })
-    Folder_FECar:AddBox({
+    Folder_Car:AddBox({
         text = "Stick",
         callback = function(state)
             Settings.Saved.Scripts.Car.Stick = state
@@ -2063,13 +2116,13 @@ local FEScripts = function()
             end
         end
     })
-    Folder_FECar:AddBox({
+    Folder_Car:AddBox({
         text = "Speed",
         callback = function(state)
             Settings.Saved.Scripts.Car.Speed = state
         end
     })
-    Folder_FECar:AddBox({
+    Folder_Car:AddBox({
         text = "Height",
         callback = function(state)
             Settings.Saved.Scripts.Car.Height = state
@@ -2151,6 +2204,26 @@ Folder_Settings:AddButton({
 })
 
 if game.PlaceId == 142823291 then -- Murder Mystery 2
+    local GetData = function()
+        return ReplicatedStorage.GetPlayerData:InvokeServer()
+    end
+    local GetRoles = function()
+        local Data = GetData()
+        local Sheriff, Murderer, Hero
+        for i,v in next, Data do
+            if v.Role == "Murderer" then
+                Murderer = v
+            end
+            if v.Role == "Sheriff" then
+                Sheriff = v
+            end
+            if v.Role == "Hero" then
+                Hero = v
+            end
+        end
+    end
+    
+    local Murderer, Sheriff, Hero = GetRoles()
     
 end
 
