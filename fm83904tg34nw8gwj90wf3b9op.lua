@@ -707,7 +707,6 @@ local function createList(option, parent, holder)
 		Size = UDim2.new(-1, 32, 1, -32),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 		Rotation = 90,
-		BackgroundTransparency = 1,
 		Image = "rbxassetid://4918373417",
 		ImageColor3 = Color3.fromRGB(140, 140, 140),
 		ScaleType = Enum.ScaleType.Fit,
@@ -1723,7 +1722,7 @@ local getgc = getgc
 local require = require or syn.require
 
 -- Settings
-local Settings = {
+Settings = {
     License = _G.Key or "",
     Discord = "T6GrGzYCjR",
     DragSpeed = TweenInfo.new(0.1),
@@ -1734,6 +1733,13 @@ local Settings = {
     Saved = {
         TOS = false,
         ["Skip Loading"] = false,
+        Scripts = {
+            Car = {
+                Speed = 70,
+                Stick = 0.05,
+                Height = -1.03,
+            },
+        },
         Games = {
             MM2 = {},
             Arsenal = {},
@@ -2022,9 +2028,8 @@ local FEScripts = function()
     Folder_FECar:AddButton({
         text = "Execute",
         callback = function()
-            LocalPlayer.Character.Humanoid.WalkSpeed = 70
+            LocalPlayer.Character.Humanoid.WalkSpeed = Settings.Saved.Scripts.Car.Speed
             LocalPlayer.Character.Humanoid.JumpPower = 0.0001
-            Float_Height="-1.03"
             local Animation = Instance.new("Animation")
             Animation.AnimationId="rbxassetid://129342287"
             local Track = LocalPlayer.Character.Humanoid:LoadAnimation(Animation)
@@ -2035,13 +2040,46 @@ local FEScripts = function()
                     v.CustomPhysicalProperties = PhysicalProperties.new(0,0,0)
                 end
             end
-            local Character = G:GetService("Players").LocalPlayer.Character
-            Character:FindFirstChild("Humanoid").HipHeight=Float_Height
+            local Character = LocalPlayer.Character
+            Character:FindFirstChild("Humanoid").HipHeight = Settings.Saved.Scripts.Car.Height
             wait(1.5)
             for i=1, 1 do
-                repeat Character:FindFirstChild("Humanoid").HipHeight = Float_Height - n
+                repeat Character:FindFirstChild("Humanoid").HipHeight = Settings.Saved.Scripts.Car.Height - n
                     wait(.4)
-                    Character:FindFirstChild("Humanoid").HipHeight = Float_Height + n
+                    Character:FindFirstChild("Humanoid").HipHeight = Settings.Saved.Scripts.Car.Height + n
+                    wait(.4)
+                until Character:FindFirstChild("Humanoid").Health == 0
+            end
+        end
+    })
+    Folder_FECar:AddBox({
+        text = "Stick",
+        callback = function(state)
+            Settings.Saved.Scripts.Car.Stick = state
+            for i,v in next, LocalPlayer.Character:GetDescendants() do
+                if v.ClassName == "Part" then
+                    v.CustomPhysicalProperties = PhysicalProperties.new(state,0,0)
+                end
+            end
+        end
+    })
+    Folder_FECar:AddBox({
+        text = "Speed",
+        callback = function(state)
+            Settings.Saved.Scripts.Car.Speed = state
+        end
+    })
+    Folder_FECar:AddBox({
+        text = "Height",
+        callback = function(state)
+            Settings.Saved.Scripts.Car.Height = state
+            local Character = LocalPlayer.Character
+            Character:FindFirstChild("Humanoid").HipHeight = state
+            wait(1.5)
+            for i=1, 1 do
+                repeat Character:FindFirstChild("Humanoid").HipHeight = state - n
+                    wait(.4)
+                    Character:FindFirstChild("Humanoid").HipHeight = state + n
                     wait(.4)
                 until Character:FindFirstChild("Humanoid").Health == 0
             end
