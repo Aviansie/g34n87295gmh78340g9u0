@@ -424,7 +424,6 @@ for i,v in pairs(Players:GetPlayers()) do
 end
 
 RunService.RenderStepped:Connect(function()
-    Camera = workspace.CurrentCamera
     for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
         if v.Update then
             local s,e = pcall(v.Update, v)
@@ -2128,16 +2127,53 @@ end)
 
 -- Universal Script
 
-local AviHub = UI:CreateWindow([[<font color="#ff1c1c">Adurite</font> v0.0.1a]])
-
-local Visuals, Scripthub
+local Universal = UI:CreateWindow([[<font color="#ff1c1c">Avihub</font> v0.0.1a]])
+local Aimbot, Visuals, Scripthub
 local Universal = function()
-    Visuals = AviHub:AddFolder("Visuals")
-    Visuals:AddToggle({
-        text = "ESP Kill Switch",
-        state = ESP.Enabled,
-        callback = ESP.Toggle
+    Aimbot = Universal:AddFolder("Aimbot")
+    local FOVCircle = Aimbot:AddFolder("FOV Circle")
+    local Circle = Self:Draw("Circle", {
+        Radius = 120,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 2,
+        Filled = false,
+        Visible = false
     })
+    RunService.RenderStepped:Connect(function()
+        Circle.Position = Vector2.new(Mouse.X, Mouse.Y + 36)    
+    end)
+    FOVCircle:AddToggle({
+        text = "FOV Circle",
+        state = Circle.Visible,
+        callback = function(state)
+            Circle.Visible = state
+        end
+    })
+    FOVCircle:AddSlider({
+        text = "Radius",
+        value = Circle.Radius,
+        min = 20,
+        max = 500,
+        callback = function(value)
+            Circle.Radius = value
+        end
+    })
+    FOVCircle:AddToggle({
+        text = "Fill Circle",
+        state = Circle.Filled,
+        callback = function(state)
+            Circle.Filled = state
+        end
+    })
+    FOVCircle:AddColor({
+        text = "Circle Color",
+        color = Color3.fromRGB(255, 255, 255),
+        callback = function(color)
+            Circle.Color = color
+        end
+    })
+
+    Visuals = Universal:AddFolder("Visuals")
     Visuals:AddToggle({
         text = "Team Colors",
         state = ESP.TeamColor,
@@ -2146,8 +2182,8 @@ local Universal = function()
         end
     })
     Visuals:AddToggle({
-        text = "Usernames",
-        state = ESP.Usernames,
+        text = "Name Tags",
+        state = ESP.Names,
         callback = function(state)
             ESP.Names = state
         end
@@ -2168,32 +2204,52 @@ local Universal = function()
     })
     Visuals:AddToggle({
         text = "Tracers",
+        state = ESP.Tracers,
         callback = function(state)
             ESP.Tracers = state
         end
     })
     Visuals:AddToggle({
         text = "Face Camera",
+        state = ESP.FaceCamera,
         callback = function(state)
             ESP.FaceCamera = state
         end
     })
+    Scripthub = Universal:AddFolder("Script Hub")
 end
 
-local GameId = game.GameId
+local PlaceId = game.PlaceId
 
 local Games = {
-    [1494262959] = [[<font color="#8f5959">Criminality</font>]],
+    [8343259840] = [[<font color="#8f5959">Criminality</font>]],
 }
 
-local Found = Games[GameId] or nil
+local Found = Games[PlaceId] or nil
 if not Found then
     Universal()
 end
 
-if GameId == 1494262959 then -- Criminality
-    local Criminality = UI:CreateWindow(Games[GameId])
+if PlaceId == 8343259840 then -- Criminality
+    local Criminality = UI:CreateWindow(Games[PlaceId])
     local CrimESP = Criminality:AddFolder("Object ESP")
+    
+    -- Scraps
+    ESP:AddObjectListener(game:GetService("Workspace").Filter.SpawnedPiles, {
+        Type = "Model",
+        CustomName = "Scrap",
+        Color = function(obj)
+            return obj.MeshPart.Particle.Color.Keypoints[1].Value
+        end,
+        IsEnabled = "Scrap"
+    })
+    CrimESP:AddToggle({
+        text = "Scrap ESP",
+        callback = function(state)
+            ESP.Scrap = state
+        end
+    })
+
     -- ATMs 
     for i,v in pairs(game:GetService("Workspace").Map.ATMz:GetDescendants()) do
         if string.find(v.Name,"ATM") then 
